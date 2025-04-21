@@ -2,11 +2,12 @@
 import { useState, useEffect } from "react";
 
 export default function Timer() {
-  // string
+
   const [starting, setStarting] = useState(false);
   const [hour, setHour] = useState(0);
   const [minute, setMinute] = useState(1);
   const [second, setSecond] = useState(5);
+  const [displayInput, setDisplayInput] = useState(true)
 
   useEffect(() => {
     let timer;
@@ -39,6 +40,17 @@ export default function Timer() {
     return () => clearInterval(timer);
   }, [starting, second, minute, hour]);
 
+  useEffect(() => {
+    const animInput = setInterval(() => {
+        if (starting){
+            setDisplayInput(false)
+        }else{
+            setDisplayInput(true)
+        }
+    },[200])
+    return () => clearInterval(animInput);
+  },[starting])
+
   const onStartChange = () => {
     setStarting((prev) => !prev);
   };
@@ -67,12 +79,12 @@ export default function Timer() {
         {String(hour).padStart(2, "0")}:{String(minute).padStart(2, "0")}:
         {String(second).padStart(2, "0")}
       </h1>
-      <div className={`${!starting ? "opacity-100": "opacity-0 "} duration-200`}>
+      <div className={`${!starting ? "h-fit": "h-0"} duration-200 overflow-hidden ${displayInput ? "pointer-events-auto opacity-100": "h-0 pointer-events-none opacity-0"}`}>
         <input onChange={onhourChange} defaultValue={hour} type="number" max={24} min={0}></input>
         <input onChange={onMinuteChange} defaultValue={minute} type="number" max={60} min={0}></input>
         <input onChange={onSecondChange} defaultValue={second} type="number" max={60} min={0}></input>
       </div>
-      <button onClick={onStartChange}>{starting ? "Pause" : "Start"}</button>
+      <button onClick={onStartChange} className="duration-300">{starting ? "Pause" : "Start"}</button>
     </div>
   );
 }
