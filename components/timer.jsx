@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { Orbitron } from "next/font/google";
 import { Oxanium } from "next/font/google";
 import Image from "next/image";
@@ -25,6 +25,9 @@ export default function Timer() {
   const [displayInput, setDisplayInput] = useState(true);
   const [secCount, setSecCount] = useState(0)  
   const [inputError,setInputError] = useState(false)
+  const hourRef = useRef()
+  const minuteRef = useRef()
+  const secondRef = useRef()
   // min 0 max 180
   const [clockdeg,setClockDeg] = useState(0);
 
@@ -65,6 +68,23 @@ export default function Timer() {
       setClockDeg(Math.min((secCount/(hourInput*60*60+minuteInput*60+secondInput)) * 180,180))
     }
   },[starting,secCount,hourInput,minuteInput,secondInput])
+
+
+  useEffect(() => {
+    if (secondRef.current) {
+      secondRef.current.value = second
+      setSecondInput(second)
+    }
+    if (minuteRef.current) {
+      minuteRef.current.value = minute
+      setMinuteInput(minute)
+    }
+    if (hourRef.current) {
+      hourRef.current.value = hour
+      setHourInput(hour)
+    }
+  }, [second, minute, hour])
+
 
   useEffect(()=>{
     setSecCount(0)
@@ -132,6 +152,7 @@ export default function Timer() {
           <input
             onChange={onhourChange}
             defaultValue={hour}
+            ref={hourRef}
             type="number"
             max={24}
             min={0}
@@ -143,6 +164,7 @@ export default function Timer() {
           <input
             onChange={onMinuteChange}
             defaultValue={minute}
+            ref={minuteRef}
             type="number"
             max={60}
             min={0}
@@ -154,6 +176,7 @@ export default function Timer() {
         <input
           onChange={onSecondChange}
           defaultValue={second}
+          ref={secondRef}
           type="number"
           max={60}
           min={0}
