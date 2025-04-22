@@ -113,19 +113,25 @@ export default function Timer() {
 
   const onhourChange = (e) => {
     const number = e.target.value;
-    if (number >= 0 && number <= 24) {
-      setHourInput(e.target.value);
+    if (number.length > 2 || number < 0 || number > 24){
+      hourRef.current.value = hour
+    }else{
+      setHourInput(e.target.value)
     }
   };
   const onMinuteChange = (e) => {
     const number = e.target.value;
-    if (number >= 0 && number <= 60) {
+    if (number.length > 2 || number < 0 || number > 60) {
+      minuteRef.current.value = minute
+    }else{
       setMinuteInput(e.target.value);
     }
   };
   const onSecondChange = (e) => {
     const number = e.target.value;
-    if (number >= 0 && number <= 60) {
+    if (number.length > 2 || number < 0 || number > 60) {
+      secondRef.current.value = second
+    }else{
       setSecondInput(e.target.value);
     }
   };
