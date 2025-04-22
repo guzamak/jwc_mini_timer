@@ -62,8 +62,7 @@ export default function Timer() {
 
   useEffect(()=>{
     if (starting){
-      console.log((secCount/(hourInput*60*60+minuteInput*60+secondInput)) * 180)
-      setClockDeg((secCount/(hourInput*60*60+minuteInput*60+secondInput)) * 180)
+      setClockDeg(Math.min((secCount/(hourInput*60*60+minuteInput*60+secondInput)) * 180),180)
     }
   },[starting,secCount,hourInput,minuteInput,secondInput])
 
