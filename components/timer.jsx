@@ -69,6 +69,9 @@ export default function Timer() {
 
   useEffect(()=>{
     setClockDeg(0)
+    setHour(hourInput)
+    setMinute(minuteInput)
+    setSecond(secondInput)
   },[hourInput,minuteInput,secondInput])
 
   useEffect(() => {
