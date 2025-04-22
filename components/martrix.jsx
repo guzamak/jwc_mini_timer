@@ -45,6 +45,7 @@ class Effect {
 export default function Martrix() {
     const canvasSizeRef = useRef()
     const canvasRef = useRef()
+    let animationFrameId
     useEffect(() => {
         const canvas = canvasRef.current
         const ctx = canvas.getContext("2d")
@@ -55,9 +56,13 @@ export default function Martrix() {
         const animate = () => {
             ctx.font = effect.fontSize +  "px monospace"
             effect.symbols.forEach(symbols => symbols.draw(ctx))
-            requestAnimationFrame(animate)
+            animationFrameId = window.requestAnimationFrame(animate)
         }
         animate()
+
+        return () => {
+            window.cancelAnimationFrame(animationFrameId);
+        }
     },
     [])
     
