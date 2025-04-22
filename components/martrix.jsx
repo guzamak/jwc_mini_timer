@@ -67,7 +67,7 @@ export default function Martrix() {
     [])
     
   return (
-    <div className='container h-full' ref={canvasSizeRef}>
+    <div className='container h-full absolute pointer-events-none' ref={canvasSizeRef}>
       <canvas ref={canvasRef}></canvas>
     </div>
   )

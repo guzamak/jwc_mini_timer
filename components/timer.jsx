@@ -33,57 +33,66 @@ export default function Timer() {
 
   useEffect(() => {
     let timer;
+
     if (starting) {
-      timer = setInterval(() => {
-        setSecCount(secCount+1)
-        setSecond((prev) => {
-          if (prev > 0) return prev - 1;
-          if (minute > 0 || hour > 0) return 59;
-          return 0;
-        });
+      let totalSeconds = hour * 3600 + minute * 60 + second; 
+      
+        timer = setInterval(() => {
+          setSecCount(prevSecCount => prevSecCount + 1)
+          let remainingSeconds = totalSeconds - 1; 
 
-        setMinute((prev) => {
-          if (second === 0) {
-            if (prev > 0) return prev - 1;
-            if (hour > 0) return 59;
-          }
-          return prev;
-        });
+          const newHour = Math.floor(remainingSeconds / 3600);
+          remainingSeconds %= 3600;
+          const newMinute = Math.floor(remainingSeconds / 60); 
+          const newSecond = remainingSeconds % 60; 
 
-        setHour((prev) => {
-          if (second === 0 && minute === 0 && prev > 0) {
-            return prev - 1;
+          setHour(newHour);
+          setMinute(newMinute);
+          setSecond(newSecond);
+
+          if (remainingSeconds <= 0) {
+            clearInterval(timer);
+            // setStarting(false);
           }
-          return prev;
-        });
-      }, 1000);
+
+          totalSeconds = remainingSeconds; 
+        }, 1000);
+
     }
 
-    return () => clearInterval(timer);
-  }, [starting, second, minute, hour]);
-
-
-  useEffect(()=>{
-    if (starting){
-      setClockDeg(Math.min((secCount/(hourInput*60*60+minuteInput*60+secondInput)) * 180,180))
-    }
-  },[starting,secCount,hourInput,minuteInput,secondInput])
+    return () => clearInterval(timer); 
+  }, [starting, hour, minute, second,]);
 
 
   useEffect(() => {
-    if (secondRef.current) {
-      secondRef.current.value = second
-      setSecondInput(second)
+    if (starting) {
+      const maxSecound = hourInput * 60 * 60 + minuteInput * 60 + secondInput;
+      // console.log(maxSecound)
+      const clockDegree = (secCount / maxSecound) * 180;
+  
+      setClockDeg(Math.min(clockDegree, 180)); // Limit the maximum degree to 180
     }
-    if (minuteRef.current) {
-      minuteRef.current.value = minute
-      setMinuteInput(minute)
+  }, [starting, secCount, hourInput, minuteInput, secondInput]);
+  
+
+
+  useEffect(() => {
+    if (!starting){
+
+      if (secondRef.current) {
+        secondRef.current.value = second
+        setSecondInput(second)
+      }
+      if (minuteRef.current) {
+        minuteRef.current.value = minute
+        setMinuteInput(minute)
+      }
+      if (hourRef.current) {
+        hourRef.current.value = hour
+        setHourInput(hour)
+      }
     }
-    if (hourRef.current) {
-      hourRef.current.value = hour
-      setHourInput(hour)
-    }
-  }, [second, minute, hour])
+  }, [starting,second, minute, hour])
 
 
   useEffect(()=>{
