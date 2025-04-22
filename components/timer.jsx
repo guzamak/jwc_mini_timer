@@ -33,52 +33,45 @@ export default function Timer() {
 
   useEffect(() => {
     let timer;
-
-    if (starting) {
-      let totalSeconds = hour * 3600 + minute * 60 + second; 
-      
-        timer = setInterval(() => {
-          setSecCount(prevSecCount => prevSecCount + 1)
-          let remainingSeconds = totalSeconds - 1; 
-
-          const newHour = Math.floor(remainingSeconds / 3600);
-          remainingSeconds %= 3600;
-          const newMinute = Math.floor(remainingSeconds / 60); 
-          const newSecond = remainingSeconds % 60; 
-
-          setHour(newHour);
-          setMinute(newMinute);
-          setSecond(newSecond);
-
-          if (remainingSeconds <= 0) {
-            clearInterval(timer);
-            // setStarting(false);
-          }
-
-          totalSeconds = remainingSeconds; 
-        }, 1000);
-
+    let totalSeconds = hour * 3600 + minute * 60 + second;
+  
+    if (starting && totalSeconds > 0) {
+      timer = setInterval(() => {
+        totalSeconds--;
+        setSecCount(prevSecCount => prevSecCount + 1)
+        const newHour = Math.floor(totalSeconds / 3600);
+        const newMinute = Math.floor((totalSeconds % 3600) / 60);
+        const newSecond = totalSeconds % 60;
+  
+        setHour(newHour);
+        setMinute(newMinute);
+        setSecond(newSecond);
+  
+        if (totalSeconds <= 0) {
+          setStarting(false);
+          clearInterval(timer);
+        }
+      }, 1000);
     }
-
-    return () => clearInterval(timer); 
-  }, [starting, hour, minute, second,]);
+  
+    return () => clearInterval(timer);
+  }, [starting]);
 
 
   useEffect(() => {
-    if (starting) {
+    // เทียบบัญญคืไตร
       const maxSecound = hourInput * 60 * 60 + minuteInput * 60 + secondInput;
       // console.log(maxSecound)
       const clockDegree = (secCount / maxSecound) * 180;
   
       setClockDeg(Math.min(clockDegree, 180)); // Limit the maximum degree to 180
-    }
-  }, [starting, secCount, hourInput, minuteInput, secondInput]);
+  
+  }, [secCount, hourInput, minuteInput, secondInput]);
   
 
 
   useEffect(() => {
     if (!starting){
-
       if (secondRef.current) {
         secondRef.current.value = second
         setSecondInput(second)
