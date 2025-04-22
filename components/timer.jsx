@@ -69,9 +69,6 @@ export default function Timer() {
 
   useEffect(()=>{
     setClockDeg(0)
-    setHour(hourInput)
-    setMinute(minuteInput)
-    setSecond(secondInput)
   },[hourInput,minuteInput,secondInput])
 
   useEffect(() => {
@@ -163,7 +160,7 @@ export default function Timer() {
       </div>
       <button
         onClick={onStartChange}
-        className="bg-[#B472FD] text-white px-24 py-3 rounded-full hover:scale-110 duration-500 border-[0.88px] border-[#58377e] shadow-[0px_3px_0_#A95DFD] cursor-pointer font-medium"
+        className="bg-[#B472FD] text-white px-24 py-3 rounded-full hover:scale-110 duration-500 border-[0.88px] border-[#58377e] shadow-[0px_3px_0_#A95DFD] cursor-pointer font-medium focus-visible:ring-0"
       >
         {starting ? "PAUSE" : "START"}
       </button>
