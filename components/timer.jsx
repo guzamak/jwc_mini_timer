@@ -19,9 +19,9 @@ export default function Timer() {
   const [hour, setHour] = useState(0);
   const [minute, setMinute] = useState(0);
   const [second, setSecond] = useState(0);
-  const [hourInput,setHourInput] = useState(0);
-  const [minuteInput,setMinuteInput] = useState(0);
-  const [secondInput,setSecondInput] = useState(0);
+  const [hourInput,setHourInput] = useState();
+  const [minuteInput,setMinuteInput] = useState();
+  const [secondInput,setSecondInput] = useState();
   const [displayInput, setDisplayInput] = useState(true);
   const [secCount, setSecCount] = useState(0)  
   const [inputError,setInputError] = useState(false)
@@ -31,23 +31,66 @@ export default function Timer() {
   // min 0 max 180
   const [clockdeg,setClockDeg] = useState(0);
 
+  // useEffect(() => {
+  //   let timer;
+  
+  //   if (starting  0) {
+  //     timer = setInterval(() => {
+  //       // setSecCount(prevSecCount => prevSecCount + 1)
+  //       let newHours 
+  //       let newMinutes
+  //       let newSecond
+
+  //       if (hour - 1 != 0 ...){
+  //       }
+  //       if (){
+  //       } 
+  //       if () {
+
+  //       }
+
+  //       setHour(newHours)
+  //       setMinute(newMinutes)
+  //       setSecond(newSecond)
+  //       if (newHours == 0 && newMinutes == 0 && newSecond == 0) {
+  //         setStarting(false);
+  //         clearInterval(timer);
+  //       }
+  //     }, 1000);
+  //   }
+  
+  //   return () => clearInterval(timer);
+  // }, [starting]);
   useEffect(() => {
     let timer;
-    let totalSeconds = hour * 3600 + minute * 60 + second;
   
-    if (starting && totalSeconds > 0) {
+    if (starting) {
       timer = setInterval(() => {
-        totalSeconds--;
-        setSecCount(prevSecCount => prevSecCount + 1)
-        const newHour = Math.floor(totalSeconds / 3600);
-        const newMinute = Math.floor((totalSeconds % 3600) / 60);
-        const newSecond = totalSeconds % 60;
+         setSecCount(prevSecCount => prevSecCount + 1)
+        let newHours = hour;
+        let newMinutes = minute;
+        let newSecond = second;
   
-        setHour(newHour);
-        setMinute(newMinute);
+        if (newSecond > 0) {
+          newSecond -= 1;
+        } else {
+          if (newMinutes > 0) {
+            newMinutes -= 1;
+            newSecond = 59;
+          } else {
+            if (newHours > 0) {
+              newHours -= 1;
+              newMinutes = 59;
+              newSecond = 59;
+            }
+          }
+        }
+  
+        setHour(newHours);
+        setMinute(newMinutes);
         setSecond(newSecond);
   
-        if (totalSeconds <= 0) {
+        if (newHours === 0 && newMinutes === 0 && newSecond === 0) {
           setStarting(false);
           clearInterval(timer);
         }
@@ -55,8 +98,7 @@ export default function Timer() {
     }
   
     return () => clearInterval(timer);
-  }, [starting]);
-
+  }, [starting, hour, minute, second]);
 
   useEffect(() => {
     // เทียบบัญญคืไตร
@@ -91,9 +133,15 @@ export default function Timer() {
   useEffect(()=>{
     setSecCount(0)
     setClockDeg(0)
-    setHour(hourInput)
-    setMinute(minuteInput)
-    setSecond(secondInput)
+    if (hourInput){
+      setHour(hourInput)
+    }
+    if (minuteInput){
+      setMinute(minuteInput)
+    }
+    if (secondInput){
+      setSecond(secondInput)
+    }
   },[hourInput,minuteInput,secondInput])
 
   useEffect(() => {
@@ -121,7 +169,7 @@ export default function Timer() {
   };
   const onMinuteChange = (e) => {
     const number = e.target.value;
-    if (number.length > 2 || number < 0 || number > 60) {
+    if (number.length > 2 || number < 0 || number >= 60) {
       minuteRef.current.value = minute
     }else{
       setMinuteInput(e.target.value);
@@ -129,7 +177,7 @@ export default function Timer() {
   };
   const onSecondChange = (e) => {
     const number = e.target.value;
-    if (number.length > 2 || number < 0 || number > 60) {
+    if (number.length > 2 || number < 0 || number >= 60) {
       secondRef.current.value = second
     }else{
       setSecondInput(e.target.value);
