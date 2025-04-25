@@ -153,7 +153,7 @@ export default function Timer() {
 
   return (
     <div
-      className={`container flex flex-col items-center justify-center gap-6 ${oxanium.className}`}
+      className={`container flex flex-col items-center justify-center gap-6 ${oxanium.className} z-10`}
     >
       <div>
         <Image src={"Hack Timer.svg"} width={200} height={200} alt="" />
@@ -184,7 +184,7 @@ export default function Timer() {
             type="number"
             max={24}
             min={0}
-            className="border rounded-2xl py-2 px-12 text-center border-[#b372fd6e]  focus-visible:ring-0 outline-0 text-[#b372fd]"
+            className="border rounded-2xl py-2 px-12 text-center border-[#b372fd6e]  focus-visible:ring-0 outline-0 text-[#b372fd] bg-[#F8F1E7]"
           ></input>
         </div>
         <div className="flex flex-col justify-center items-center gap-2">
@@ -196,7 +196,7 @@ export default function Timer() {
             type="number"
             max={60}
             min={0}
-            className="border rounded-2xl py-2 px-12 text-center border-[#b372fd6e] focus-visible:ring-0 outline-0 text-[#b372fd]"
+            className="border rounded-2xl py-2 px-12 text-center border-[#b372fd6e] focus-visible:ring-0 outline-0 text-[#b372fd] bg-[#F8F1E7]"
           ></input>
         </div>
         <div className="flex flex-col justify-center items-center gap-2">
@@ -208,7 +208,7 @@ export default function Timer() {
             type="number"
             max={60}
             min={0}
-            className="border rounded-2xl py-2 px-12 text-center border-[#b372fd6e] focus-visible:ring-0 outline-0 text-[#b372fd]"
+            className="border rounded-2xl py-2 px-12 text-center border-[#b372fd6e] focus-visible:ring-0 outline-0 text-[#b372fd] bg-[#F8F1E7]"
           ></input>
         </div>
       </div>
