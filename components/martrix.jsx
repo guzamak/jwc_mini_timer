@@ -6,7 +6,7 @@ class Symbol {
     this.ctx = ctx;
     this.characters = "{}[]()MINI HACKATHONBYJWC13";
     this.x = x;
-    this.y = y;
+    this.y = canvasHeigth;
     this.fontSize = fontSize;
     this.text = "";
     this.canvasHeigth = canvasHeigth;
@@ -23,7 +23,7 @@ class Symbol {
       this.x * this.fontSize,
       this.y * this.fontSize
     );
-    if (this.y * this.fontSize > this.canvasHeigth * 1.5) {
+    if (this.y * this.fontSize > this.canvasHeigth * 1.5 && Math.random() > 0.75) {
       this.y = 0;
     }
     this.y += 1;
@@ -54,11 +54,13 @@ class Effect {
   }
 }
 
+
 export default function Martrix() {
   const canvasSizeRef = useRef();
   const canvasRef = useRef();
   const [ctx, setCtx] = useState(null);
   let animationFrameId;
+
   useEffect(() => {
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
@@ -68,7 +70,7 @@ export default function Martrix() {
     canvas.height = height;
 
     const effect = new Effect(ctx, canvas.width, canvas.height);
-    console.log(effect);
+    // console.log(effect);
 
     const animate = () => {
       const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
