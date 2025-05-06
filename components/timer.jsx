@@ -34,46 +34,35 @@ export default function Timer() {
 
   useEffect(() => {
     let timer;
-
+  
     if (starting) {
-      const timeStart = () => {
-        setSecCount((prevSecCount) => prevSecCount + 1);
-        let newHours = hour;
-        let newMinutes = minute;
-        let newSecond = second;
-
-        if (newSecond > 0) {
-          newSecond -= 1;
-        } else {
-          if (newMinutes > 0) {
-            newMinutes -= 1;
-            newSecond = 59;
-          } else {
-            if (newHours > 0) {
-              newHours -= 1;
-              newMinutes = 59;
-              newSecond = 59;
-            }
-          }
-        }
-
-        setHour(newHours);
-        setMinute(newMinutes);
-        setSecond(newSecond);
-
-        if (newHours === 0 && newMinutes === 0 && newSecond === 0) {
+      let remainingSeconds = totalSeconds;
+  
+      const countdown = () => {
+        remainingSeconds -= 1;
+        setSecCount(totalSeconds-remainingSeconds);
+  
+        const hours = Math.floor(remainingSeconds / 3600);
+        const minutes = Math.floor((remainingSeconds % 3600) / 60);
+        const seconds = remainingSeconds % 60;
+  
+        setHour(hours);
+        setMinute(minutes);
+        setSecond(seconds);
+  
+        if (remainingSeconds <= 0) {
           setStarting(false);
           clearTimeout(timer);
-        }else{
-          timer = setTimeout(timeStart,1000)
+        } else {
+          timer = setTimeout(countdown, 1000);
         }
-      }
-      timer = setTimeout(timeStart,1000)
-
+      };
+  
+      timer = setTimeout(countdown, 1000);
     }
-
+  
     return () => clearTimeout(timer);
-  }, [starting, hour, minute, second]);
+  }, [starting, totalSeconds]);
 
   useEffect(() => {
     // เทียบบัญญคืไตร
@@ -133,7 +122,7 @@ export default function Timer() {
         setHour(diffHour)
         setMinute(diffMin)
         setSecond(diffSecond)
-        console.log('เหลือเวลา:', diffHour, diffMin, diffSecond);
+        // console.log('เหลือเวลา:', diffHour, diffMin, diffSecond);
       }
     }
   }, [starting,hourInput, minuteInput, secondInput]);
