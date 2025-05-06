@@ -59,9 +59,25 @@ export default function Martrix() {
   const canvasSizeRef = useRef();
   const canvasRef = useRef();
   const [ctx, setCtx] = useState(null);
-  let animationFrameId;
+  const [windowWidth, setWindowWidth] = useState()
+  const [windowHeight,setWindowHeight] = useState()
 
   useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+      setWindowHeight(window.innerHeight);
+    };
+
+    handleResize();
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
+  useEffect(() => {
+    let timeoutId
+    let animationFrameId;
     const canvas = canvasRef.current;
     const ctx = canvas.getContext("2d");
     setCtx(ctx);
@@ -71,9 +87,8 @@ export default function Martrix() {
 
     const effect = new Effect(ctx, canvas.width, canvas.height);
     // console.log(effect);
-
     const animate = () => {
-      const gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
+      let gradient = ctx.createLinearGradient(0, 0, canvas.width, 0);
       gradient.addColorStop(0, "white");
       gradient.addColorStop(0.5, "#F8F1E7");
       gradient.addColorStop(1, "white");
@@ -85,16 +100,17 @@ export default function Martrix() {
 
       ctx.font = effect.fontSize + "px monospace";
       effect.symbols.forEach((symbols) => symbols.draw());
-      setTimeout(() => {
+      timeoutId =setTimeout(() => {
         animationFrameId = requestAnimationFrame(animate);
-      }, 80); // 100ms = ~10fps
+      }, 80);
     };
     animate();
 
     return () => {
       window.cancelAnimationFrame(animationFrameId);
+      window.clearTimeout(timeoutId);
     };
-  }, []);
+  }, [ctx,windowWidth,windowHeight]);
 
   return (
     <div

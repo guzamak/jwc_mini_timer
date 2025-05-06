@@ -19,9 +19,9 @@ export default function Timer() {
   const [hour, setHour] = useState(0);
   const [minute, setMinute] = useState(0);
   const [second, setSecond] = useState(0);
-  const [hourInput, setHourInput] = useState();
-  const [minuteInput, setMinuteInput] = useState();
-  const [secondInput, setSecondInput] = useState();
+  const [hourInput, setHourInput] = useState("00");
+  const [minuteInput, setMinuteInput] = useState("00");
+  const [secondInput, setSecondInput] = useState("00");
   const [displayInput, setDisplayInput] = useState(true);
   const [secCount, setSecCount] = useState(0);
   const [inputError, setInputError] = useState(false);
@@ -30,13 +30,13 @@ export default function Timer() {
   const secondRef = useRef();
   // min 0 max 180
   const [clockdeg, setClockDeg] = useState(0);
-  const initialTotalSeconds = useRef(0);
+  const [totalSeconds, setTotalSeconds] = useState()
 
   useEffect(() => {
     let timer;
 
     if (starting) {
-      timer = setInterval(() => {
+      const timeStart = () => {
         setSecCount((prevSecCount) => prevSecCount + 1);
         let newHours = hour;
         let newMinutes = minute;
@@ -63,53 +63,82 @@ export default function Timer() {
 
         if (newHours === 0 && newMinutes === 0 && newSecond === 0) {
           setStarting(false);
-          clearInterval(timer);
+          clearTimeout(timer);
+        }else{
+          timer = setTimeout(timeStart,1000)
         }
-      }, 1000);
+      }
+      timer = setTimeout(timeStart,1000)
+
     }
 
-    return () => clearInterval(timer);
+    return () => clearTimeout(timer);
   }, [starting, hour, minute, second]);
 
   useEffect(() => {
     // เทียบบัญญคืไตร
     // บางทีเป็น string 
-    const totalSeconds = parseInt(hourInput) * 3600 + parseInt(minuteInput) * 60 + parseInt(secondInput);
+    // const totalSeconds = parseInt(hourInput) * 3600 + parseInt(minuteInput) * 60 + parseInt(secondInput);
     const clockDegree = (secCount / totalSeconds) * 180;
 
     setClockDeg(Math.min(clockDegree, 180)); // Limit the maximum degree to 180
   }, [secCount, hourInput, minuteInput, secondInput]);
 
-  useEffect(() => {
-    if (!starting) {
-      if (secondRef.current) {
-        secondRef.current.value = second;
-        setSecondInput(second);
-      }
-      if (minuteRef.current) {
-        minuteRef.current.value = minute;
-        setMinuteInput(minute);
-      }
-      if (hourRef.current) {
-        hourRef.current.value = hour;
-        setHourInput(hour);
-      }
-    }
-  }, [starting, second, minute, hour]);
+  // useEffect(() => {
+  //   if (!starting) {
+  //     if (secondRef.current) {
+  //       secondRef.current.value = second;
+  //       setSecondInput(second);
+  //     }
+  //     if (minuteRef.current) {
+  //       minuteRef.current.value = minute;
+  //       setMinuteInput(minute);
+  //     }
+  //     if (hourRef.current) {
+  //       hourRef.current.value = hour;
+  //       setHourInput(hour);
+  //     }
+  //   }
+  // }, [starting, second, minute, hour]);
 
   useEffect(() => {
     setSecCount(0);
     setClockDeg(0);
-    if (hourInput) {
-      setHour(hourInput);
+    // if (hourInput) {
+    //   setHour(hourInput);
+    // }
+    // if (minuteInput) {
+    //   setMinute(minuteInput);
+    // }
+    // if (secondInput) {
+    //   setSecond(secondInput);
+    // }
+    if (starting){
+      const now = new Date();
+      const targetTime = new Date();
+    
+      targetTime.setHours(parseInt(hourInput));
+      targetTime.setMinutes(parseInt(minuteInput));
+      targetTime.setSeconds(parseInt(secondInput));
+      targetTime.setMilliseconds(0);
+    
+      const diffMs = targetTime.getTime() - now.getTime(); 
+      const totalDiffSec = Math.floor(diffMs / 1000);
+      setTotalSeconds(totalDiffSec)
+    
+      if (totalDiffSec > 0) {
+        const diffHour = Math.floor(totalDiffSec / 3600);
+        const diffMin = Math.floor((totalDiffSec % 3600) / 60);
+        const diffSecond = totalDiffSec % 60;
+        setHour(diffHour)
+        setMinute(diffMin)
+        setSecond(diffSecond)
+        console.log('เหลือเวลา:', diffHour, diffMin, diffSecond);
+      }
     }
-    if (minuteInput) {
-      setMinute(minuteInput);
-    }
-    if (secondInput) {
-      setSecond(secondInput);
-    }
-  }, [hourInput, minuteInput, secondInput]);
+  }, [starting,hourInput, minuteInput, secondInput]);
+
+
 
   useEffect(() => {
     const animInput = setInterval(() => {
@@ -122,32 +151,60 @@ export default function Timer() {
     return () => clearInterval(animInput);
   }, [starting]);
 
+
   const onStartChange = () => {
     setStarting((prev) => !prev);
   };
 
-  const onhourChange = (e) => {
-    const number = e.target.value;
-    if (number.length > 2 || number < 0 || number > 24) {
-      hourRef.current.value = hour;
+
+  const padTime = (value) => {
+    const num = parseInt(value, 10);
+    if (isNaN(num)) return "00";
+    return num.toString().padStart(2, "0");
+  };
+  
+  const onHourChange = (e) => {
+    let number = e.target.value;
+    if (number.length > 2) {
+      number = number.slice(1); 
+    }
+  
+    number = parseInt(number, 10);
+    if (isNaN(number) || number < 0 || number > 24) {
+      hourRef.current.value = hour; 
     } else {
-      setHourInput(e.target.value);
+      const formatted = padTime(number > 24 ? 24 : number);
+      setHourInput(formatted);
     }
   };
+  
   const onMinuteChange = (e) => {
-    const number = e.target.value;
-    if (number.length > 2 || number < 0 || number >= 60) {
+    let number = e.target.value;
+    if (number.length > 2) {
+      number = number.slice(1); 
+    }
+  
+    number = parseInt(number, 10);
+    if (isNaN(number) || number < 0 || number >= 60) {
       minuteRef.current.value = minute;
     } else {
-      setMinuteInput(e.target.value);
+      const formatted = padTime(number);
+      setMinuteInput(formatted);
     }
   };
+  
   const onSecondChange = (e) => {
-    const number = e.target.value;
-    if (number.length > 2 || number < 0 || number >= 60) {
+    let number = e.target.value;
+    if (number.length > 2) {
+      number = number.slice(1);
+    }
+  
+    number = parseInt(number, 10);
+    if (isNaN(number) || number < 0 || number >= 60) {
       secondRef.current.value = second;
     } else {
-      setSecondInput(e.target.value);
+      const formatted = padTime(number);
+      setSecondInput(formatted);
     }
   };
 
@@ -176,10 +233,11 @@ export default function Timer() {
         } ${displayInput ? "h-24" : "h-0"}  duration-300 overflow-hidden `}
       >
         <div className="flex flex-col justify-center items-center gap-2">
-          <p className="font-medium text-[#b372fd6e]">Hours</p>
+          <p className="font-medium text-[#b372fd6e]">Hour</p>
           <input
-            onChange={onhourChange}
-            defaultValue={hour}
+            onChange={onHourChange}
+            // defaultValue={padTime(0)}
+            value={hourInput}
             ref={hourRef}
             type="number"
             max={24}
@@ -188,10 +246,11 @@ export default function Timer() {
           ></input>
         </div>
         <div className="flex flex-col justify-center items-center gap-2">
-          <p className="font-medium text-[#b372fd6e]">Minutes</p>
+          <p className="font-medium text-[#b372fd6e]">Minute</p>
           <input
             onChange={onMinuteChange}
-            defaultValue={minute}
+            // defaultValue={padTime(0)}
+            value={minuteInput}
             ref={minuteRef}
             type="number"
             max={60}
@@ -203,7 +262,8 @@ export default function Timer() {
           <p className="font-medium text-[#b372fd6e]">Second</p>
           <input
             onChange={onSecondChange}
-            defaultValue={second}
+            // defaultValue={padTime(0)}
+            value={secondInput}
             ref={secondRef}
             type="number"
             max={60}
@@ -216,6 +276,7 @@ export default function Timer() {
         onClick={onStartChange}
         className="bg-[#B472FD] text-white px-24 py-3 rounded-full hover:scale-110 duration-500 border-[0.88px] border-[#58377e] shadow-[0px_3px_0_#A95DFD] cursor-pointer font-medium focus-visible:ring-0"
       >
+        
         {starting ? "PAUSE" : "START"}
       </button>
     </div>
